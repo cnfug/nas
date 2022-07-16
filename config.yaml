@@ -1,0 +1,37 @@
+name: ClientWorkerName
+catch_rules: 
+    - rule: _ 
+      transform_rules: 
+        - search: \#.* 
+          replace: ''
+
+        - search: _ 
+          replace: 9.123.com:8443
+
+        - search: _
+          action: fetch
+          fetch:
+            status: 200
+            engine: fetch
+            preflight: true
+            mode: cors
+            redirect: follow
+            credentials: include
+            timeout: 5000
+    - rule: .*
+      transform_rules: 
+        - search: _
+          action: fetch
+          fetch:
+            enable: true
+            engine: fetch
+            preflight: false
+            timeout: 5000
+        - search: (^4|^5)
+          searchin: status
+          action: return
+          return:
+            body: <h1>ClientWorker Fetch Failed!</h1>
+            status: 503
+            header:
+              content-type: text/html;charset=utf-8
